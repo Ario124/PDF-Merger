@@ -1,7 +1,8 @@
 import tkinter
 import customtkinter
-from tkinter import messagebox, filedialog
+from tkinter import filedialog
 from tkinter import *
+import shutil
 
 
 class MergeApp(customtkinter.CTk):
@@ -9,12 +10,9 @@ class MergeApp(customtkinter.CTk):
         super().__init__()
         
         self.location_var = tkinter.StringVar()
-        self.destination_var = tkinter.StringVar()
+        self.destinationLocation = tkinter.StringVar()
         self.geometry("750x300")
         self.title("PDF Merger")
-        
-        
-
         
         self.frame = customtkinter.CTkFrame(master=self, width=600,height=160,corner_radius=10)
         self.frame.pack(padx=20, pady=40)
@@ -47,17 +45,17 @@ class MergeApp(customtkinter.CTk):
         self.source_browseButton2.pack(side="right", padx=11, pady=11)
         
         
-        self.destinationText = customtkinter.CTkEntry(master=self.frame2, width = 300, textvariable = self.destination_var)
+        self.destinationText = customtkinter.CTkEntry(master=self.frame2, width = 300, textvariable = self.destinationLocation)
         self.destinationText.pack(side="left", padx=11,pady=11)
 
 
 
 
-        self.copyButton = customtkinter.CTkButton(master=self, text ="Copy Files", command = self.SourceBrowse, width = 15)
+        self.copyButton = customtkinter.CTkButton(master=self, text ="Copy Files", command = self.CopyFile, width = 15)
         # self.copyButton.pack(padx=11,pady=11)
         self.copyButton.place(relx=0.2, rely=0.55)
 
-        self.moveButton = customtkinter.CTkButton(master=self, text ="Move Files", command = self.SourceBrowse, width = 15)
+        self.moveButton = customtkinter.CTkButton(master=self, text ="Move Files", command = self.MoveFile, width = 15)
         # self.moveButton.pack(padx=11,pady=11)
         self.moveButton.place(relx=0.33, rely=0.55)
         
@@ -92,6 +90,37 @@ class MergeApp(customtkinter.CTk):
     def DestinationBrowse(self):
         self.destinationdirectory = filedialog.askdirectory(initialdir ="")
         self.destinationText.insert('1', self.destinationdirectory)
+
+
+    def CopyFile(self):
+        files_list = self.files_list
+        destination_location = self.destinationLocation.get()
+
+        for f in files_list:
+            shutil.copy(f, destination_location)
+
+        window = customtkinter.CTkToplevel(self)
+        window.geometry("300x150")
+        window.title("PDF Merger - Copy")
+        
+        # create label on CTkToplevel window
+        label = customtkinter.CTkLabel(window, text="Successfully copied all files.", text_color="lightgreen")
+        label.pack(side="top", fill="both", expand=True, padx=20, pady=20)
+
+    def MoveFile(self):
+        files_list = self.files_list
+        destination_location = self.destinationLocation.get()
+
+        for f in files_list:
+            shutil.move(f, destination_location)
+
+        window = customtkinter.CTkToplevel(self)
+        window.geometry("300x150")
+        window.title("PDF Merger - Move")
+        
+        # create label on CTkToplevel window
+        label = customtkinter.CTkLabel(window, text="Successfully moved all files.", text_color="lightgreen")
+        label.pack(side="top", fill="both", expand=True, padx=20, pady=20)
 
 app = MergeApp()
 app.mainloop()
