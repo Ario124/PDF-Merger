@@ -1,5 +1,6 @@
 import tkinter
 import customtkinter
+from tkinter import messagebox, filedialog
 from tkinter import *
 
 
@@ -8,6 +9,7 @@ class MergeApp(customtkinter.CTk):
         super().__init__()
         
         self.location_var = tkinter.StringVar()
+        self.destination_var = tkinter.StringVar()
         self.geometry("750x300")
         self.title("PDF Merger")
         
@@ -41,12 +43,12 @@ class MergeApp(customtkinter.CTk):
         self.link_Label2.pack(side="left", padx=11, pady=11)
         
         
-        self.source_browseButton2 = customtkinter.CTkButton(master=self.frame2, text ="Browse", command = self.SourceBrowse, width = 15)
+        self.source_browseButton2 = customtkinter.CTkButton(master=self.frame2, text ="Browse", command = self.DestinationBrowse, width = 15)
         self.source_browseButton2.pack(side="right", padx=11, pady=11)
         
         
-        self.sourceText2 = customtkinter.CTkEntry(master=self.frame2, width = 300, textvariable = self.location_var)
-        self.sourceText2.pack(side="left", padx=11,pady=11)
+        self.destinationText = customtkinter.CTkEntry(master=self.frame2, width = 300, textvariable = self.destination_var)
+        self.destinationText.pack(side="left", padx=11,pady=11)
 
 
 
@@ -83,8 +85,13 @@ class MergeApp(customtkinter.CTk):
         label.pack(side="top", fill="both", expand=True, padx=40, pady=40)
 
 
-    def SourceBrowse():
-        print("Hello")
+    def SourceBrowse(self):
+        self.files_list = list(filedialog.askopenfilenames(initialdir =""))
+        self.sourceText.insert('1', self.files_list)
+    
+    def DestinationBrowse(self):
+        self.destinationdirectory = filedialog.askdirectory(initialdir ="")
+        self.destinationText.insert('1', self.destinationdirectory)
 
 app = MergeApp()
 app.mainloop()
