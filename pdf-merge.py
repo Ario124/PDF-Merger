@@ -1,7 +1,6 @@
 import os
 import glob
 import shutil
-import time
 import tkinter
 import customtkinter
 from PyPDF2 import PdfFileMerger
@@ -16,7 +15,7 @@ class MergeApp(customtkinter.CTk):
         self.geometry("750x300")
         self.title("PDF Merger")
 
-        self.fakturor = sorted(glob.glob('*.pdf'))
+        self.invoices = sorted(glob.glob('*.pdf'))
         self.merger = PdfFileMerger()
 
 
@@ -61,19 +60,15 @@ class MergeApp(customtkinter.CTk):
 
 
         self.copyButton = customtkinter.CTkButton(master=self, text ="Copy Files", command = self.CopyFile, width = 15)
-        # self.copyButton.pack(padx=11,pady=11)
         self.copyButton.place(relx=0.2, rely=0.55)
 
         self.moveButton = customtkinter.CTkButton(master=self, text ="Move Files", command = self.MoveFile, width = 15)
-        # self.moveButton.pack(padx=11,pady=11)
         self.moveButton.place(relx=0.33, rely=0.55)
         
         self.mergeButton = customtkinter.CTkButton(master=self, text ="Merge Files", command = self.MergeFiles, width = 15, fg_color="green", hover_color="darkgreen")
-        # self.mergeButton.pack(side="top", padx=11, pady=11)
         self.mergeButton.place(relx=0.7, rely=0.55)
 
         self.removeButton = customtkinter.CTkButton(master=self, text ="Remove Files", command = self.SourceBrowse, width = 15, fg_color="red", hover_color="darkred")
-        # self.removeButton.pack(side="top", padx=11, pady=11)
         self.removeButton.place(relx=0.5, rely=0.74)
         
 
@@ -86,16 +81,17 @@ class MergeApp(customtkinter.CTk):
         label = customtkinter.CTkLabel(window, text="CTkToplevel window")
         label.pack(side="top", fill="both", expand=True, padx=40, pady=40)
 
-
+        # Open filedialog and allow user to select files
     def SourceBrowse(self):
         self.files_list = list(filedialog.askopenfilenames(initialdir =""))
         self.sourceText.insert('1', self.files_list)
     
+        # Open filedialog and ask for directory as destination
     def DestinationBrowse(self):
         self.destinationdirectory = filedialog.askdirectory(initialdir ="")
         self.destinationText.insert('1', self.destinationdirectory)
 
-
+        # Gets the files selected by the user in the SourceBrowse()
     def CopyFile(self):
         files_list = self.files_list
         destination_location = self.destinationLocation.get()
@@ -106,8 +102,8 @@ class MergeApp(customtkinter.CTk):
         window = customtkinter.CTkToplevel(self)
         window.geometry("300x150")
         window.title("PDF Merger - Copy")
-        
-        # create label on CTkToplevel window
+        window.grab_set()
+        # Create label on Copy window
         label = customtkinter.CTkLabel(window, text="Successfully copied all files.", text_color="lightgreen")
         label.pack(side="top", fill="both", expand=True, padx=20, pady=20)
 
@@ -122,26 +118,39 @@ class MergeApp(customtkinter.CTk):
         window.geometry("300x150")
         window.title("PDF Merger - Move")
         
-        # create label on CTkToplevel window
+        # Create label on Move window
         label = customtkinter.CTkLabel(window, text="Successfully moved all files.", text_color="lightgreen")
         label.pack(side="top", fill="both", expand=True, padx=20, pady=20)
 
-
+        # Open filedialog and ask for location. Merge files and save in selected location.
     def MergeFiles(self):
-        count = 0
-        timestr = time.strftime("%Y-%m-%d-%H%M%S")
-        fakturor = self.fakturor
-        for file in fakturor:
-            self.merger.append(file)
-            count += 1
-            total = len(fakturor)
+        save_location = filedialog.asksaveasfile(
+                        mode = 'wb',
+                        defaultextension='pdf')
 
-        self.merger.write(f'Merged File {timestr}.pdf')
-        self.merger.close()
+        count = 0
+        invoices = self.invoices
+        if save_location != None:
+            for file in invoices:
+                self.merger.append(file)
+                count += 1
+                total = len(invoices)
+            self.merger.write(save_location)
+            self.merger.close()
         
-        if count == total:
-            for pdf in fakturor:
-                os.remove(pdf)
+            # Remove files after merger.close()
+            if count == total:
+                for pdf in invoices:
+                    os.remove(pdf)
+
+            window = customtkinter.CTkToplevel(self)
+            window.geometry("300x150")
+            window.title("PDF Merger - Save")
+            window.grab_set()
+
+            # Create label on Save window
+            label = customtkinter.CTkLabel(window, text="File saved!", text_color="lightgreen")
+            label.pack(side="top", fill="both", expand=True, padx=20, pady=20)
 
 app = MergeApp()
 app.mainloop()
