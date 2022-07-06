@@ -84,7 +84,7 @@ class MergeApp(customtkinter.CTk):
         self.mergeButton = customtkinter.CTkButton(master=self, text ="Merge Files", command = self.MergeFiles, width = 15, fg_color="green", hover_color="darkgreen")
         self.mergeButton.place(relx=0.7, rely=0.75)
 
-        self.removeButton = customtkinter.CTkButton(master=self, text ="Remove Files", command = self.SourceBrowse, width = 15, fg_color="red", hover_color="darkred")
+        self.removeButton = customtkinter.CTkButton(master=self, text ="Remove Files", command = self.RemoveFiles, width = 15, fg_color="red", hover_color="darkred")
         self.removeButton.place(relx=0.5, rely=0.75)
         
 
@@ -128,6 +128,19 @@ class MergeApp(customtkinter.CTk):
         # Create label on Copy window
         label = customtkinter.CTkLabel(window, text="Successfully copied all files.", text_color="lightgreen")
         label.pack(side="top", fill="both", expand=True, padx=20, pady=20)
+        
+
+        # Remove all files ending with'pdf' from mergeLocation
+    def RemoveFiles(self):
+        mergeLocation = self.mergeLocation.get()
+        source_dir = mergeLocation
+        file_list = self.files_list
+        os.chdir(file_list)
+
+        for item in os.listdir(source_dir):
+            if item.endswith('pdf'):
+                os.remove(item)
+
 
     def MoveFile(self):
         files_list = self.files_list
@@ -147,7 +160,7 @@ class MergeApp(customtkinter.CTk):
         # Open filedialog and ask for location. Merge files and save in selected location.
     def MergeFiles(self):
         mergeLocation = self.mergeLocation.get()
-        source_dir_test = mergeLocation
+        source_dir = mergeLocation
 
 
         save_location = filedialog.asksaveasfile(
@@ -158,7 +171,7 @@ class MergeApp(customtkinter.CTk):
 
         if save_location != None:
 
-            for item in os.listdir(source_dir_test):
+            for item in os.listdir(source_dir):
                 if item.endswith('pdf'):
                     pdf_files.append(item)
                     
@@ -174,7 +187,7 @@ class MergeApp(customtkinter.CTk):
             self.merger.close()
         
             # Remove files after merger.close()
-            # for item in os.listdir(source_dir_test):
+            # for item in os.listdir(source_dir):
             #     if item.endswith('pdf'):
             #         os.remove(item)
             #         print("-TEST- ENDS WITH PDF:", item)
