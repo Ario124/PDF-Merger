@@ -1,5 +1,4 @@
 import os
-import glob
 import shutil
 import tkinter
 import customtkinter
@@ -182,18 +181,10 @@ class MergeApp(customtkinter.CTk):
             for file in pdf_files:
                 self.merger.append(file)
                 count += 1
-                total = len(pdf_files)
+                # total = len(pdf_files)
             self.merger.write(save_location)
             self.merger.close()
-        
-            # Remove files after merger.close()
-            # for item in os.listdir(source_dir):
-            #     if item.endswith('pdf'):
-            #         os.remove(item)
-            #         print("-TEST- ENDS WITH PDF:", item)
-            # if count == total:
-            #     for pdf in invoices:
-            #         os.remove(pdf)
+    
 
             window = customtkinter.CTkToplevel(self)
             window.geometry("300x150")
